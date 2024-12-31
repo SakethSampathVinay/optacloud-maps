@@ -6,10 +6,10 @@ import Footer from "./components/Footer/Footer";
 import Home from "./components/Home/Home";
 import Login from "./pages/Login/Login.jsx";
 import AddressForm from "./components/AddressForm/AddressForm"; // Assuming AddressForm is imported from a path
+import AddressManagement from "./components/AddressManagement/AddressManagement"; // Assuming AddressManagement is imported from a path
 import { Route, Routes, Navigate, Link } from "react-router-dom"; // Use Navigate and Link for navigation
 import "./App.css";
-import 'font-awesome/css/font-awesome.min.css';
-
+import "font-awesome/css/font-awesome.min.css";
 
 const App = () => {
   const {
@@ -37,10 +37,6 @@ const App = () => {
         <h3 className="delivery-address-heading">
           Delivery Address: {deliveryAddress}
         </h3>
-        {/* Link to navigate to Address Form */}
-        <Link to="/address">
-          <button>Go to Address Form</button>
-        </Link>
       </div>
 
       <Routes>
@@ -48,6 +44,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<Home />} />
         <Route path="/address" element={<AddressForm />} />
+        <Route path="/addressmanagement" element={<AddressManagement />} />
         {/* Default Route */}
         <Route
           path="/"

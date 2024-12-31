@@ -1,17 +1,16 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+
 export const AppContext = createContext();
 
-const AppContextProvider = (props) => {
+const AppContextProvider = ({ children }) => {
   const backendUrl = process.env.REACT_APP_BACKEND_URL;
-  const [token, setToken] = useState(
-    localStorage.getItem("token") ? localStorage.getItem("token") : null
-  );
-
+  const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [showModal, setShowModal] = useState(true);
   const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [addresses, setAddresses] = useState([]);
 
-  // Function to request the user's location
+  // Request user location
   const enableLocation = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -25,10 +24,9 @@ const AppContextProvider = (props) => {
     );
   };
 
-  // Function to get address from coordinates using OpenCage Geocoding API
+  // Fetch address using OpenCage Geocoding API
   const getAddressFromCoordinates = (latitude, longitude) => {
     const apiKey = "6e2ec7e2ae2344fea26387118ea4dbba";
-    console.log(apiKey); // Get API key from environment
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
 
     fetch(url)
@@ -36,27 +34,21 @@ const AppContextProvider = (props) => {
       .then((data) => {
         if (data.results && data.results.length > 0) {
           const components = data.results[0].components;
-
-          // Extract city, state, and pincode
           const city =
             components.city || components.town || components.village || "";
           const state = components.state || "";
           const postalCode = components.postcode || "";
-
-          // Format the address as "City, State - Pincode"
           const formattedAddress = `${city}, ${state} - ${postalCode}`;
           setDeliveryAddress(formattedAddress);
-          setShowModal(false); // Close the modal
+          setShowModal(false);
         } else {
           console.error("Error fetching address:", data.status);
         }
       })
-      .catch((error) => {
-        console.error("Error fetching address:", error);
-      });
+      .catch((error) => console.error("Error fetching address:", error));
   };
 
-  // Function to allow manual address search
+  // Manual address entry
   const searchManually = () => {
     const userAddress = prompt("Please enter your address:");
     if (userAddress) {
@@ -65,33 +57,60 @@ const AppContextProvider = (props) => {
     }
   };
 
-  // Function to save the address to the backend
+  // Save address to the backend
   const saveAddress = async (address) => {
     try {
-      const response = await axios.post(
-        `${backendUrl}/address/saveAddress`, // Using environment variable for backend URL
-        { address }
-      );
-      console.log(response.data.message); // Show success message
+      await axios.post(`${backendUrl}/address/saveAddress`, { address });
       alert("Address saved successfully!");
+      fetchAddresses();
     } catch (error) {
       console.error("Error saving address:", error);
       alert("Failed to save address. Please try again.");
     }
   };
 
-  // Function to fetch addresses from the backend
+  // Fetch all addresses from the backend
   const fetchAddresses = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/address/getAddresses`);
-      console.log(response.data); // Display the list of addresses
+      const response = await axios.get(
+        `${backendUrl}/api/address/getAddresses`
+      );
+      setAddresses(response.data);
     } catch (error) {
       console.error("Error fetching addresses:", error);
       alert("Failed to fetch addresses. Please try again.");
     }
   };
 
-  // Store token in localStorage whenever it changes
+  // Update an address
+  const updateAddress = async (addressId, updatedAddress) => {
+    try {
+      await axios.put(`${backendUrl}/api/address/updateAddress/${addressId}`, {
+        address: updatedAddress,
+      });
+      alert("Address updated successfully!");
+      fetchAddresses();
+    } catch (error) {
+      console.error("Error updating address:", error);
+      alert("Failed to update address. Please try again.");
+    }
+  };
+
+  // Delete an address
+  const deleteAddress = async (addressId) => {
+    try {
+      await axios.delete(
+        `${backendUrl}/api/address/deleteAddress/${addressId}`
+      );
+      alert("Address deleted successfully!");
+      fetchAddresses();
+    } catch (error) {
+      console.error("Error deleting address:", error);
+      alert("Failed to delete address. Please try again.");
+    }
+  };
+
+  // Update localStorage whenever the token changes
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
@@ -100,6 +119,7 @@ const AppContextProvider = (props) => {
     }
   }, [token]);
 
+  // Provide values to the context
   const value = {
     backendUrl,
     token,
@@ -112,11 +132,12 @@ const AppContextProvider = (props) => {
     searchManually,
     saveAddress,
     fetchAddresses,
+    addresses,
+    updateAddress,
+    deleteAddress,
   };
 
-  return (
-    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
-  );
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
 
 export default AppContextProvider;
