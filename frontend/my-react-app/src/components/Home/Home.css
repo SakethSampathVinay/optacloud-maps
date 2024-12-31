@@ -1,0 +1,153 @@
+.home-container {
+  padding: 1.5rem;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.banner {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.banner h1 {
+  font-size: 2rem;
+  color: #1db05f;
+}
+
+.banner p {
+  margin: 1rem 0;
+}
+
+.shop-now-button {
+  background-color: #1db05f;
+  color: white;
+  padding: 0.8rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.categories {
+  margin-bottom: 2rem;
+}
+
+.categories h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.categories-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.category-card {
+  flex: 1 1 calc(25% - 1rem);
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.category-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.featured-products {
+  margin-bottom: 2rem;
+}
+
+.featured-products h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.products-container {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.product-card {
+  flex: 1 1 calc(33.33% - 1rem);
+  text-align: center;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.product-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.add-to-cart-button {
+  background-color: #ef0d36;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* General styles for images in flexbox */
+.category-image,
+.product-image {
+  width: 100%; /* Scale image to fit the container width */
+  max-width: 200px; /* Limit the maximum size of the image */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Ensures the image covers the area neatly */
+  border-radius: 8px; /* Optional for rounded corners */
+}
+
+/* Flexbox container adjustments */
+.categories-container,
+.products-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: center; /* Center-align items */
+  gap: 16px; /* Space between items */
+}
+
+/* Card containers for proper spacing */
+.category-card,
+.product-card {
+  flex: 1 1 calc(25% - 16px); /* Responsive sizing: 4 items per row with gap */
+  max-width: calc(25% - 16px);
+  box-sizing: border-box;
+  text-align: center; /* Center-align text */
+}
+
+@media (max-width: 1024px) {
+  .category-card,
+  .product-card {
+    flex: 1 1 calc(33.33% - 16px); /* 3 items per row for medium screens */
+    max-width: calc(33.33% - 16px);
+  }
+}
+
+@media (max-width: 768px) {
+  .category-card,
+  .product-card {
+    flex: 1 1 calc(50% - 16px); /* 2 items per row for small screens */
+    max-width: calc(50% - 16px);
+  }
+}
+
+@media (max-width: 480px) {
+  .category-card,
+  .product-card {
+    flex: 1 1 100%; /* Full-width for very small screens */
+    max-width: 100%;
+  }
+}
