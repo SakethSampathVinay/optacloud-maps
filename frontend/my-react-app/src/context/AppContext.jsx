@@ -1,5 +1,5 @@
-import { createContext, useState } from "react";
-
+import { createContext, useState, useEffect } from "react";
+import axios from "axios";
 export const AppContext = createContext();
 
 const AppContextProvider = (props) => {
@@ -7,7 +7,7 @@ const AppContextProvider = (props) => {
   const [token, setToken] = useState(
     localStorage.getItem("token") ? localStorage.getItem("token") : null
   );
-  
+
   const [showModal, setShowModal] = useState(true);
   const [deliveryAddress, setDeliveryAddress] = useState("");
 
@@ -27,7 +27,8 @@ const AppContextProvider = (props) => {
 
   // Function to get address from coordinates using OpenCage Geocoding API
   const getAddressFromCoordinates = (latitude, longitude) => {
-    const apiKey = "6e2ec7e2ae2344fea26387118ea4dbba"; // Replace with your OpenCage API key
+    const apiKey = "6e2ec7e2ae2344fea26387118ea4dbba";
+    console.log(apiKey); // Get API key from environment
     const url = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${apiKey}`;
 
     fetch(url)
@@ -64,6 +65,41 @@ const AppContextProvider = (props) => {
     }
   };
 
+  // Function to save the address to the backend
+  const saveAddress = async (address) => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/address/saveAddress`, // Using environment variable for backend URL
+        { address }
+      );
+      console.log(response.data.message); // Show success message
+      alert("Address saved successfully!");
+    } catch (error) {
+      console.error("Error saving address:", error);
+      alert("Failed to save address. Please try again.");
+    }
+  };
+
+  // Function to fetch addresses from the backend
+  const fetchAddresses = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/address/getAddresses`);
+      console.log(response.data); // Display the list of addresses
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+      alert("Failed to fetch addresses. Please try again.");
+    }
+  };
+
+  // Store token in localStorage whenever it changes
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
   const value = {
     backendUrl,
     token,
@@ -74,6 +110,8 @@ const AppContextProvider = (props) => {
     setDeliveryAddress,
     enableLocation,
     searchManually,
+    saveAddress,
+    fetchAddresses,
   };
 
   return (
